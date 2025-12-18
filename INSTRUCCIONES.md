@@ -1,8 +1,7 @@
 # Guía de Instalación y Despliegue
 
 <div align="center">
-
-![Stars](https://img.shields.io/github/stars/Arktcode/radark-core?style=social)
+
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FArktcode%2Fradark-core&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitas&edge_flat=false)](https://hits.seeyoufarm.com)
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=Arktcode&repo=radark-core&layout=compact)
 
