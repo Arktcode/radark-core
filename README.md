@@ -6,8 +6,6 @@
 [![Latest Version](https://img.shields.io/github/v/release/Arktcode/radark-core?label=LATEST%20VERSION&style=for-the-badge&logo=github&color=43B581)](https://github.com/Arktcode/radark-core/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Arktcode/radark-core/total?label=&style=for-the-badge&color=7289DA)](https://github.com/Arktcode/radark-core/releases)
 <img width="1024" height="339" alt="radark" src="https://github.com/user-attachments/assets/474bb41f-aae7-4f47-942f-8e02daf596eb" />
-<details><img width="401" height="299" alt="image" src="https://github.com/user-attachments/assets/32118150-e0a3-407e-b6a9-09cd477a91ed" />
-</details>
 </div>
 
 Esta guía explica cómo configurar y ejecutar el bot en diferentes entornos.
@@ -135,6 +133,7 @@ DISCORD_TOKEN=your_real_token
 
 ### 4. Start
 Go to the console and press **Start**.
+
 
 
 
