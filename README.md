@@ -140,12 +140,13 @@ DISCORD_TOKEN=your_real_token
 ### 4. Start
 Go to the console and press **Start**.
 
-###Testing
+### Testing
 
 Once the bot has started, it tries to execute `/schem` or `@(botname)`. Then it tries to attach an `msch` file or a `base64` link; the result should look something like this:
 
 <details><img width="401" height="299" alt="image" src="https://github.com/user-attachments/assets/32118150-e0a3-407e-b6a9-09cd477a91ed" />
 </details>
+
 
 
 
