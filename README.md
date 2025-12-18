@@ -29,7 +29,7 @@ Esta guía explica cómo configurar y ejecutar el bot en diferentes entornos.
 ### 2. Configuración (.env)
 Crea un archivo `.env` junto al jar:
 ```
-DISCORD_TOKEN=tu_token_aqui
+DISCORD_TOKEN=tu_token
 ```
 
 ### 3. Descarga de Assets
@@ -64,7 +64,7 @@ Muchos hostings de juegos usan Pterodactyl. Sigue estos pasos:
 ### 3. Configurar Token
 En el "File Manager", crea un archivo nuevo llamado `.env` y pega tu token:
 ```
-DISCORD_TOKEN=tu_token_real_aqui
+DISCORD_TOKEN=tu_token_real
 ```
 
 ### 4. Iniciar
@@ -94,7 +94,7 @@ This guide explains how to configure and run the bot in different environments.
 ### 2. Configuration (.env)
 Create a `.env` file next to the jar:
 ```
-DISCORD_TOKEN=your_token_here
+DISCORD_TOKEN=your_token
 ```
 
 ### 3. Assets Download
@@ -129,11 +129,12 @@ Many game hostings use Pterodactyl. Follow these steps:
 ### 3. Configure Token
 In the "File Manager", create a new file named `.env` and paste your token:
 ```
-DISCORD_TOKEN=your_real_token_here
+DISCORD_TOKEN=your_real_token
 ```
 
 ### 4. Start
 Go to the console and press **Start**.
+
 
 
 
