@@ -133,3 +133,6 @@ DISCORD_TOKEN=your_real_token_here
 
 ### 4. Start
 Go to the console and press **Start**.
+
+<img width="1024" height="339" alt="radark" src="https://github.com/user-attachments/assets/35cd591d-3f27-4b8a-87ed-00afcc65400a" />
+
