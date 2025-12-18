@@ -134,7 +134,5 @@ DISCORD_TOKEN=your_real_token
 
 ### 4. Start
 Go to the console and press **Start**.
-
-
-
+<img width="401" height="299" alt="image" src="https://github.com/user-attachments/assets/07f0cc68-f1fe-414a-b87e-17e2e78931cf" />
 
