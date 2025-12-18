@@ -5,7 +5,7 @@
 [![Stars](https://img.shields.io/github/stars/Arktcode/radark-core?label=PLEASE%20STAR%20RADARK!&style=for-the-badge&color=7289DA)](https://github.com/Arktcode/radark-core/stargazers)
 [![Latest Version](https://img.shields.io/github/v/release/Arktcode/radark-core?label=LATEST%20VERSION&style=for-the-badge&logo=github&color=43B581)](https://github.com/Arktcode/radark-core/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Arktcode/radark-core/total?label=&style=for-the-badge&color=7289DA)](https://github.com/Arktcode/radark-core/releases)
-<img width="1024" height="339" alt="radark" src="https://github.com/user-attachments/assets/fa140333-ef77-4740-b545-7cfe8b1c609f" />
+<img width="1024" height="339" alt="radark" src="https://github.com/user-attachments/assets/474bb41f-aae7-4f47-942f-8e02daf596eb" />
 
 </div>
 
@@ -134,5 +134,6 @@ DISCORD_TOKEN=your_real_token_here
 
 ### 4. Start
 Go to the console and press **Start**.
+
 
 
