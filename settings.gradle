@@ -1,4 +1,1 @@
-Project.name = "radArk"
-Project.group = "com.github.Arktcode"
-author = "Arksource"
-version = "0.6.4"
+rootProject.name = 'radArk'
