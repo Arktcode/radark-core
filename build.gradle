@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.radark'
+version = '1.0.0'
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:5.0.0-beta.24'
+    
+    // Mindustry Core
+    implementation 'com.github.Anuken.Mindustry:core:v146'
+    implementation 'com.github.Anuken.Arc:arc-core:v146'
+    
+    // SLF4J (Logging)
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
+    
+    // Dotenv para variables de entorno
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['src']
+        }
+    }
+}
+
+shadowJar {
+    archiveFileName.set('server.jar')
+    manifest {
+        attributes 'Main-Class': 'radark.radArk'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
