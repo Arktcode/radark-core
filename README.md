@@ -69,6 +69,12 @@ DISCORD_TOKEN=tu_token_real
 ### 4. Iniciar
 Ve a la consola y presiona **Start**.
 
+### prueba
+
+Una vez iniciado el bot intenta ejecutar `/schem` o @(bot). Luego adjunta un archivo. `msch` o un link `base64`.
+<details><img width="401" height="299" alt="image" src="https://github.com/user-attachments/assets/32118150-e0a3-407e-b6a9-09cd477a91ed" />
+</details>
+
 ---
 
 # Installation and Deployment Guide
@@ -133,7 +139,6 @@ DISCORD_TOKEN=your_real_token
 
 ### 4. Start
 Go to the console and press **Start**.
-
 
 
 
