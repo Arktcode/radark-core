@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![Stars](https://img.shields.io/github/stars/Arktcode/radark-core?style=social)
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FArktcode%2Fradark-core&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitas&edge_flat=false)](https://hits.seeyoufarm.com)
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=Arktcode&repo=radark-core&layout=compact)
+[![Stars](https://img.shields.io/github/stars/Arktcode/radark-core?label=PLEASE%20STAR%20RADARK!&style=for-the-badge&color=7289DA)](https://github.com/Arktcode/radark-core/stargazers)
+[![Latest Version](https://img.shields.io/github/v/release/Arktcode/radark-core?label=LATEST%20VERSION&style=for-the-badge&logo=github&color=43B581)](https://github.com/Arktcode/radark-core/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Arktcode/radark-core/total?label=&style=for-the-badge&color=7289DA)](https://github.com/Arktcode/radark-core/releases)
 
 </div>
 
