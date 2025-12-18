@@ -125,3 +125,4 @@ DISCORD_TOKEN=your_real_token_here
 
 ### 4. Start
 Go to the console and press **Start**.
+
