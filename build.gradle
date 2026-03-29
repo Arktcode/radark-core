@@ -4,21 +4,30 @@ plugins {
 }
 
 group = 'com.radark'
-version = '1.0.0'
+version = '1.5.0'
 sourceCompatibility = '17'
 targetCompatibility = '17'
 
 repositories {
     mavenCentral()
+    maven { url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository' }
     maven { url 'https://jitpack.io' }
+}
+
+configurations.all {
+    resolutionStrategy {
+        // Forzamos ambas librerías a la v156.1 para compatibilidad con la v8
+        force 'com.github.Anuken.Arc:arc-core:v156.1'
+        force 'com.github.Anuken.Mindustry:core:v156.1'
+    }
 }
 
 dependencies {
     implementation 'net.dv8tion:JDA:5.0.0-beta.24'
     
-    // Mindustry Core
-    implementation 'com.github.Anuken.Mindustry:core:v146'
-    implementation 'com.github.Anuken.Arc:arc-core:v146'
+    // Mindustry Core + Arc (v8 Content)
+    implementation 'com.github.Anuken.Mindustry:core:v156.1'
+    implementation 'com.github.Anuken.Arc:arc-core:v156.1'
     
     // SLF4J (Logging)
     implementation 'org.slf4j:slf4j-simple:2.0.9'
@@ -39,7 +48,7 @@ sourceSets {
 }
 
 shadowJar {
-    archiveFileName.set('server.jar')
+    archiveFileName.set('radark.jar')
     manifest {
         attributes 'Main-Class': 'radark.radArk'
     }
