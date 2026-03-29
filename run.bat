@@ -1,7 +1,7 @@
 @echo off
 REM Ejecuta el script para el bot de Discord Mindustry (Windows)
 echo =================================================
-echo Mindustry Discord Bot - Build Made by Arksource.
+echo Mindustry radark Bot - Build Made by Arksource.
 echo =================================================
 echo.
 
@@ -46,4 +46,4 @@ echo [START] Iniciando el bot :P...
 echo.
 
 REM Ejecuta el bot
-java -Dassets.path="%ASSETS_PATH%" -jar build\libs\mindustry-discord-bot-1.0.0.jar
+java -Dassets.path="%ASSETS_PATH%" -jar build\libs\radark.jar
