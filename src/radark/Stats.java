@@ -1,17 +1,11 @@
 package radark;
 
-import arc.struct.ObjectMap;
-import arc.struct.Seq;
-import mindustry.content.Blocks;
-import mindustry.ctype.ContentType;
 import mindustry.game.Schematic;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
-import mindustry.world.consumers.ConsumePower;
-import mindustry.world.meta.Stat;
-import mindustry.world.meta.StatValues;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -36,7 +30,6 @@ public class Stats {
         EMOTES.put("scrap", "<:chatarra:1330600754993692713>");
         EMOTES.put("silicon", "<:silicio:1182532671642021889>");
         EMOTES.put("plastanium", "<:plastanio:1167316708961292298>");
-        EMOTES.put("phase-fabric", "<:aleacionelctrica:1162833334884368384>");
         EMOTES.put("surge-alloy", "<:aleacionelctrica:1162833334884368384>");
         EMOTES.put("spore-pod", "<:vainadeesporas:1397917969341743218>");
         EMOTES.put("blast-compound", "<:compuestoexplosivo:1167316380245299200>");
@@ -61,109 +54,171 @@ public class Stats {
         EMOTES.put("cryofluid", "<:criogenico:1382931942638616616>");
         EMOTES.put("slag", "<:Fundido:1200961953888211035>");
         EMOTES.put("arkycite", "<:Arkycita:1200962441278935093>");
-        EMOTES.put("ozone", "🟣");
-        EMOTES.put("hidrogen", "⚪");
-        EMOTES.put("nitrogen", "☁️");
-        EMOTES.put("cyanogen", "🔵");
+        EMOTES.put("ozone", "<:ozone:1487622364601778196>");
+        EMOTES.put("hidrogen", "<:hydrogen:1487622275539931147> ");
+        EMOTES.put("nitrogen", "<:nitrogen:1487622225115877496>");
+        EMOTES.put("cyanogen", "<:cyanogen:1487622322595565738>");
     }
 
     public static EmbedBuilder getEmbed(Schematic schematic) {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(Color.decode("#fed17b"));
 
-        // Calcula el costo
-        Map<Item, Integer> costs = new HashMap<>();
-        schematic.tiles.each(tile -> {
-            if (tile.block.requirements != null) {
-                for (ItemStack stack : tile.block.requirements) {
-                    costs.merge(stack.item, stack.amount, Integer::sum);
-                }
-            }
-        });
-
-        StringBuilder costStr = new StringBuilder();
-        costs.forEach((item, amount) -> {
-            String emoji = EMOTES.getOrDefault(item.name, "");
-            costStr.append(emoji).append(" **").append(amount).append("**  ");
-        });
-
-        if (costStr.length() > 0) {
-            embed.setDescription(costStr.toString());
-        }
-
-        // Calcula las estadisticas
-        float powerProd = 0f;
-        float powerCons = 0f;
-
-        for (Schematic.Stile tile : schematic.tiles) {
-            Block block = tile.block;
-
-            if (block.consPower != null) {
-                powerCons += block.consPower.usage * 60f;
-            }
-            if (block.outputsPower && !block.name.equals("power-source") && !block.name.equals("infinite-power-node")) {
-                try {
-                    java.lang.reflect.Field field = block.getClass().getField("powerProduction");
-                    float production = field.getFloat(block) * 60f;
-                    if (production < 1000000f) {
-                        powerProd += production;
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        }
-
-        if (powerProd > 0.001f)
-            embed.addField(EMOTES.get("power-plus") + " Generación", String.format("%.1f/s", powerProd), true);
-        if (powerCons > 0.001f)
-            embed.addField(EMOTES.get("power-minus") + " Consumo", String.format("-%.1f/s", powerCons), true);
-
-        // Liquid Stats :D
-        Map<String, Float> liquidProd = new HashMap<>();
-        Map<String, Float> liquidCons = new HashMap<>();
-
-        java.util.function.BiConsumer<Map<String, Float>, String> addProd = (map, name) -> map.merge(name, 60f,
-                Float::sum);
-
-        for (Schematic.Stile tile : schematic.tiles) {
-            Block block = tile.block;
-
-            try {
-                if (block.consumers != null) {
-                    for (mindustry.world.consumers.Consume cons : block.consumers) {
-                        if (cons instanceof mindustry.world.consumers.ConsumeLiquid) {
-                            mindustry.world.consumers.ConsumeLiquid lc = (mindustry.world.consumers.ConsumeLiquid) cons;
-                            liquidCons.merge(lc.liquid.name, lc.amount * 60f, Float::sum);
+        try {
+            // Field 1: Recursos (costo de materiales)
+            Map<Item, Integer> costs = new HashMap<>();
+            if (schematic.tiles != null) {
+                for (Schematic.Stile tile : schematic.tiles) {
+                    if (tile.block != null && tile.block.requirements != null) {
+                        for (ItemStack stack : tile.block.requirements) {
+                            if (stack.item != null) {
+                                costs.merge(stack.item, stack.amount, Integer::sum);
+                            }
                         }
                     }
                 }
-
-                try {
-                    java.lang.reflect.Field field = block.getClass().getField("outputLiquid");
-                    mindustry.type.LiquidStack stack = (mindustry.type.LiquidStack) field.get(block);
-                    if (stack != null) {
-                        liquidProd.merge(stack.liquid.name, stack.amount * 60f, Float::sum);
-                    }
-                } catch (Exception ignored) {
-                }
-            } catch (Exception ignored) {
             }
+
+            StringBuilder costStr = new StringBuilder();
+            costs.forEach((item, amount) -> {
+                String emoji = EMOTES.getOrDefault(item.name, "");
+                costStr.append(emoji).append(" **").append(amount).append("**  ");
+            });
+
+            if (costStr.length() > 0) {
+                embed.addField("Recursos", cap(costStr.toString()), false);
+            }
+
+            // Field 2: Consumo (energía + líquidos)
+            StringBuilder consumoStr = new StringBuilder();
+
+            float powerProd = 0f;
+            float powerCons = 0f;
+
+            if (schematic.tiles != null) {
+                for (Schematic.Stile tile : schematic.tiles) {
+                    Block block = tile.block;
+                    if (block == null)
+                        continue;
+
+                    if (block.consPower != null) {
+                        powerCons += block.consPower.usage * 60f;
+                    }
+                    if (block.outputsPower && !block.name.equals("power-source")
+                            && !block.name.equals("infinite-power-node")) {
+                        try {
+                            java.lang.reflect.Field field = block.getClass().getField("powerProduction");
+                            float production = field.getFloat(block) * 60f;
+                            if (production < 1000000f) {
+                                powerProd += production;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+            }
+
+            if (powerProd > 0.001f)
+                consumoStr.append(EMOTES.get("power-plus")).append(" **").append(formatValue(powerProd))
+                        .append("/s**  ");
+            if (powerCons > 0.001f)
+                consumoStr.append(EMOTES.get("power-minus")).append(" **").append(formatValue(powerCons))
+                        .append("/s**  ");
+
+            // Liquidos
+            Map<String, Float> liquidProd = new HashMap<>();
+            Map<String, Float> liquidCons = new HashMap<>();
+
+            if (schematic.tiles != null) {
+                for (Schematic.Stile tile : schematic.tiles) {
+                    Block block = tile.block;
+                    if (block == null)
+                        continue;
+                    try {
+                        if (block.consumers != null) {
+                            for (mindustry.world.consumers.Consume cons : block.consumers) {
+                                if (cons instanceof mindustry.world.consumers.ConsumeLiquid) {
+                                    mindustry.world.consumers.ConsumeLiquid lc = (mindustry.world.consumers.ConsumeLiquid) cons;
+                                    if (lc.liquid != null) {
+                                        liquidCons.merge(lc.liquid.name, lc.amount * 60f, Float::sum);
+                                    }
+                                }
+                            }
+                        }
+                        try {
+                            java.lang.reflect.Field field = block.getClass().getField("outputLiquid");
+                            mindustry.type.LiquidStack stack = (mindustry.type.LiquidStack) field.get(block);
+                            if (stack != null && stack.liquid != null) {
+                                liquidProd.merge(stack.liquid.name, stack.amount * 60f, Float::sum);
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+
+            liquidProd.forEach((name, amount) -> {
+                if (amount > 0.001f) {
+                    String emoji = EMOTES.getOrDefault(name, EMOTES.get("liquid"));
+                    consumoStr.append(emoji).append(" **+").append(String.format("%.1f/s", amount)).append("**  ");
+                }
+            });
+
+            liquidCons.forEach((name, amount) -> {
+                if (amount > 0.001f) {
+                    String emoji = EMOTES.getOrDefault(name, EMOTES.get("liquid"));
+                    consumoStr.append(emoji).append(" **-").append(String.format("%.1f/s", amount)).append("**  ");
+                }
+            });
+
+            if (consumoStr.length() > 0) {
+                embed.addField("Stats", cap(consumoStr.toString()), false);
+            }
+
+            // Tags (Zona consolidada)
+            if (schematic.tags != null) {
+                StringBuilder tagsSb = new StringBuilder();
+                
+                // Añadir dimensiones al principio de los tags
+                tagsSb.append("• **Dimensiones**: ").append(schematic.width).append("x").append(schematic.height).append("\n");
+
+                schematic.tags.each((key, value) -> {
+                    // Solo mostrar tags secundarios (no estructurales)
+                    if (!key.equals("name") && !key.equals("description") && !key.equals("author")) {
+                        String cleanVal = value.replace("[", "").replace("]", "").replace("\"", "").replace(",", ", ");
+                        tagsSb.append("• **").append(key).append("**: ").append(cleanVal).append("\n");
+                    }
+                });
+
+                if (tagsSb.length() > 0) {
+                    embed.addField("Tags", tagsSb.toString(), false);
+                }
+
+                // Descripción (Footer)
+                String desc = schematic.tags.get("description");
+                if (desc != null && !desc.trim().isEmpty()) {
+                    embed.setFooter(desc);
+                }
+            }
+        } catch (Exception e) {
+            LoggerFactory.getLogger(Stats.class).error("Error generando estadisticas", e);
+            embed.addField("Error", "No se pudieron calcular las estadísticas por completo.", false);
         }
 
-        liquidProd.forEach((name, amount) -> {
-            if (amount > 0.001f) {
-                String emoji = EMOTES.getOrDefault(name, EMOTES.get("liquid"));
-                embed.addField(emoji + " " + name, String.format("+%.1f/s", amount), true);
-            }
-        });
-
-        liquidCons.forEach((name, amount) -> {
-            if (amount > 0.001f) {
-                String emoji = EMOTES.getOrDefault(name, EMOTES.get("liquid"));
-                embed.addField(emoji + " " + name, String.format("-%.1f/s", amount), true);
-            }
-        });
-
         return embed;
+    }
+     //Trunca un string al límite de 1024 chars que Discord impone en field values.
+    private static String cap(String s) {
+        return s.length() <= 1024 ? s : s.substring(0, 1020) + "...";
+    }
+
+    /** Formatea valores grandes (k, M) para mejor legibilidad. */
+    private static String formatValue(float value) {
+        if (value >= 1_000_000)
+            return String.format("%.1fM", value / 1_000_000f);
+        if (value >= 1_000)
+            return String.format("%.1fk", value / 1_000f);
+        return String.format("%.1f", value);
     }
 }
