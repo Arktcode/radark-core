@@ -43,10 +43,8 @@ import java.util.zip.InflaterInputStream;
 
 public class SchematicRenderer {
 
-    private final Color co = new Color();
     private Graphics2D currentGraphics;
     private BufferedImage currentImage;
-    private final ObjectMap<String, Fi> imageFiles = new ObjectMap<>();
     private final ObjectMap<arc.graphics.Texture, BufferedImage> pageImages = new ObjectMap<>();
 
     public SchematicRenderer() {
@@ -65,19 +63,14 @@ public class SchematicRenderer {
 
         String assetsPath = System.getProperty("assets.path", "./assets");
         Vars.state = new GameState();
-
         Fi assetsDir = new Fi(assetsPath);
-
         Fi atlasFile = assetsDir.child("sprites/sprites.aatls");
 
         if (!atlasFile.exists()) {
-            throw new RuntimeException(
-                    "ERROR KATASTROFICO: No se encuenta el archivo 'assets/sprites/sprites.aatls'.\n" +
-                            "Asegúrate de subir la carpeta 'assets' completa al mismo lugar que el .jar!");
+            throw new RuntimeException("Error: No se encuentra el atlas.");
         }
 
         Fi spritesDir = assetsDir.child("sprites");
-
         TextureAtlasData data = new TextureAtlasData(atlasFile, spritesDir, false);
         Core.atlas = new TextureAtlas();
 
@@ -85,11 +78,10 @@ public class SchematicRenderer {
             page.texture = arc.graphics.Texture.createEmpty(null);
             page.texture.width = page.width;
             page.texture.height = page.height;
-
             try {
                 BufferedImage img = ImageIO.read(page.textureFile.file());
                 pageImages.put(page.texture, img);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         });
 
@@ -108,6 +100,7 @@ public class SchematicRenderer {
             @Override
             protected void draw(arc.graphics.g2d.TextureRegion region, float x, float y, float originX, float originY,
                     float width, float height, float rotation) {
+
                 x += 4;
                 y += 4;
                 x *= 4;
@@ -120,8 +113,8 @@ public class SchematicRenderer {
                 at.rotate(-rotation * Mathf.degRad, originX * 4, originY * 4);
                 currentGraphics.setTransform(at);
                 BufferedImage image = getImage(((AtlasRegion) region).name);
-                if (!color.equals(Color.white)) {
-                    image = tint(image, color);
+                if (!Draw.getColor().equals(Color.white)) {
+                    image = tint(image, Draw.getColor());
                 }
                 currentGraphics.drawImage(image, 0, 0, (int) width, (int) height, null);
             }
@@ -149,7 +142,7 @@ public class SchematicRenderer {
                     block.mapColor.set(((OreBlock) block).itemDrop.color);
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         Vars.world = new mindustry.core.World() {
@@ -170,14 +163,13 @@ public class SchematicRenderer {
                     return pageImage.getSubimage(x, y, region.width, region.height);
                 }
             }
-            return new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
-        } catch (Exception e) {
-            return new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+        } catch (Exception ignored) {
         }
+        return new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
     }
 
     private BufferedImage tint(BufferedImage image, Color color) {
-        BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Color tmp = new Color();
         for (int x = 0; x < copy.getWidth(); x++) {
             for (int y = 0; y < copy.getHeight(); y++) {
@@ -197,22 +189,17 @@ public class SchematicRenderer {
     private static Schematic readSchematic(InputStream input) throws IOException {
         byte[] header = { 'm', 's', 'c', 'h' };
         for (byte b : header) {
-            if (input.read() != b) {
-                throw new IOException("Esto no es un esquema (missing 'msch' header)");
-            }
+            if (input.read() != b)
+                throw new IOException("No es un esquema válido");
         }
         input.read();
-
         try (DataInputStream stream = new DataInputStream(new InflaterInputStream(input))) {
             short width = stream.readShort();
             short height = stream.readShort();
-
             StringMap map = new StringMap();
             byte tags = stream.readByte();
-            for (int i = 0; i < tags; i++) {
+            for (int i = 0; i < tags; i++)
                 map.put(stream.readUTF(), stream.readUTF());
-            }
-
             IntMap<Block> blocks = new IntMap<>();
             byte length = stream.readByte();
             for (int i = 0; i < length; i++) {
@@ -220,12 +207,7 @@ public class SchematicRenderer {
                 Block block = Vars.content.getByName(ContentType.block, SaveFileReader.fallback.get(name, name));
                 blocks.put(i, block == null || block instanceof LegacyBlock ? Blocks.air : block);
             }
-
             int total = stream.readInt();
-            if (total > 64 * 64) {
-                throw new IOException("Esquema demasiado grande");
-            }
-
             Seq<Stile> tiles = new Seq<>(total);
             for (int i = 0; i < total; i++) {
                 Block block = blocks.get(stream.readByte());
@@ -236,36 +218,29 @@ public class SchematicRenderer {
                     tiles.add(new Stile(block, Point2.x(position), Point2.y(position), config, rotation));
                 }
             }
-
             return new Schematic(tiles, map, width, height);
         }
     }
 
     public BufferedImage renderSchematic(Schematic schematic) throws IOException {
-        if (schematic.width > 64 || schematic.height > 64) {
-            throw new IOException("Esquema demasiado grande");
-        }
-
-        BufferedImage image = new BufferedImage(
-                schematic.width * 32,
-                schematic.height * 32,
+        BufferedImage image = new BufferedImage(schematic.width * 32, schematic.height * 32,
                 BufferedImage.TYPE_INT_ARGB);
-
-        Draw.reset();
-
-        Seq<BuildPlan> requests = schematic.tiles
-                .map(t -> new BuildPlan(t.x, t.y, t.rotation, t.block, t.config));
-
         currentGraphics = image.createGraphics();
         currentImage = image;
 
+        currentGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
+        Seq<BuildPlan> requests = schematic.tiles.map(t -> new BuildPlan(t.x, t.y, t.rotation, t.block, t.config));
+
+        // 1. Dibujar bloques normales
+        Draw.reset();
         requests.each(req -> {
             req.animScale = 1f;
-            req.worldContext = false;
             req.block.drawPlanRegion(req, requests);
             Draw.reset();
         });
 
+        // 2. Dibujar iconos encima de todo
         requests.each(req -> req.block.drawPlanConfigTop(req, requests));
 
         currentGraphics.dispose();
