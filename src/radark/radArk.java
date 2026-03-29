@@ -53,7 +53,7 @@ public class radArk extends ListenerAdapter {
                             .addOption(OptionType.ATTACHMENT, "file", "Para Archivos .msch / .schem")
                             .addOption(OptionType.STRING, "code", "Para códigos Base64")
                     ).queue();
-            logger.info("Bot radArk v0.7.0 Operativo");
+            logger.info("Bot radArk v1.5.0 Operativo");
         } catch (Exception e) { logger.error("Fallo al iniciar", e); }
     }
 
